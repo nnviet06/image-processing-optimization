@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(OpenCVTest)
+project(ImageProcessingOptimization)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -23,7 +23,7 @@ add_executable(gaussian_naive src/cpu/naive/gaussian.cpp)
 target_link_libraries(gaussian_naive PRIVATE cpu_filters_lib ${OpenCV_LIBS})
 
 # Phase 1.2: SIMD Gaussian (AVX2)
-add_executable(gaussian_simd src/cpu/simd/gaussian_simd.cpp)
+add_executable(gaussian_simd src/cpu/optimized/gaussian_simd.cpp)
 target_link_libraries(gaussian_simd PRIVATE cpu_filters_lib ${OpenCV_LIBS})
 if(MSVC)
     target_compile_options(gaussian_simd PRIVATE /arch:AVX2 /O3)
@@ -32,16 +32,16 @@ else()
 endif()
 
 # Phase 1.3: Threading Gaussian
-add_executable(gaussian_threaded src/cpu/threading/gaussian_threaded.cpp)
+add_executable(gaussian_threaded src/cpu/optimized/gaussian_threaded.cpp)
 target_link_libraries(gaussian_threaded PRIVATE cpu_filters_lib Threads::Threads ${OpenCV_LIBS})
 
 # Phase 1.4: Cache-aware Gaussian
-add_executable(gaussian_cache_aware src/cpu/memory/gaussian_cache_aware.cpp)
+add_executable(gaussian_cache_aware src/cpu/optimized/gaussian_cache_aware.cpp)
 target_link_libraries(gaussian_cache_aware PRIVATE cpu_filters_lib ${OpenCV_LIBS})
 
 # CPU Benchmark
-add_executable(bench_cpu benchmarks/bench_cpu.cpp)
-target_link_libraries(bench_cpu PRIVATE cpu_filters_lib ${OpenCV_LIBS})
+add_executable(benchmark_cpu benchmarks/benchmark_cpu.cpp)
+target_link_libraries(benchmark_cpu PRIVATE cpu_filters_lib ${OpenCV_LIBS})
 
 
 
