@@ -1,14 +1,47 @@
 cmake_minimum_required(VERSION 3.10)
 project(OpenCVTest)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
-# Dùng MSYS2 OpenCV
+# Use MSYS2 OpenCV
 set(OpenCV_DIR "C:/msys64/ucrt64/lib/cmake/opencv4")
 
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+find_package(Threads REQUIRED)
 
-add_executable(test1 test1.cpp)
-target_link_libraries(test1 ${OpenCV_LIBS})
+include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# ============= PHASE 1: CPU OPTIMIZATION =============
+
+# CPU shared utilities
+add_library(cpu_filters_lib src/cpu/utils.cpp)
+target_link_libraries(cpu_filters_lib PRIVATE ${OpenCV_LIBS})
+
+# Phase 1.1: Naive Gaussian
+add_executable(gaussian_naive src/cpu/naive/gaussian.cpp)
+target_link_libraries(gaussian_naive PRIVATE cpu_filters_lib ${OpenCV_LIBS})
+
+# Phase 1.2: SIMD Gaussian (AVX2)
+add_executable(gaussian_simd src/cpu/simd/gaussian_simd.cpp)
+target_link_libraries(gaussian_simd PRIVATE cpu_filters_lib ${OpenCV_LIBS})
+if(MSVC)
+    target_compile_options(gaussian_simd PRIVATE /arch:AVX2 /O3)
+else()
+    target_compile_options(gaussian_simd PRIVATE -mavx2 -O3)
+endif()
+
+# Phase 1.3: Threading Gaussian
+add_executable(gaussian_threaded src/cpu/threading/gaussian_threaded.cpp)
+target_link_libraries(gaussian_threaded PRIVATE cpu_filters_lib Threads::Threads ${OpenCV_LIBS})
+
+# Phase 1.4: Cache-aware Gaussian
+add_executable(gaussian_cache_aware src/cpu/memory/gaussian_cache_aware.cpp)
+target_link_libraries(gaussian_cache_aware PRIVATE cpu_filters_lib ${OpenCV_LIBS})
+
+# CPU Benchmark
+add_executable(bench_cpu benchmarks/bench_cpu.cpp)
+target_link_libraries(bench_cpu PRIVATE cpu_filters_lib ${OpenCV_LIBS})
+
+
 
