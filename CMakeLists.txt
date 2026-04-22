@@ -28,7 +28,7 @@ target_link_libraries(gaussian_simd PRIVATE cpu_filters_lib ${OpenCV_LIBS})
 if(MSVC)
     target_compile_options(gaussian_simd PRIVATE /arch:AVX2 /O3)
 else()
-    target_compile_options(gaussian_simd PRIVATE -mavx2 -O3)
+    target_compile_options(gaussian_simd PRIVATE -mavx2 -mfma -O3)
 endif()
 
 # Phase 1.3: Threading Gaussian
@@ -38,10 +38,6 @@ target_link_libraries(gaussian_threaded PRIVATE cpu_filters_lib Threads::Threads
 # Phase 1.4: Cache-aware Gaussian
 add_executable(gaussian_cache_aware src/cpu/optimized/gaussian_cache_aware.cpp)
 target_link_libraries(gaussian_cache_aware PRIVATE cpu_filters_lib ${OpenCV_LIBS})
-
-# CPU Benchmark
-add_executable(benchmark_cpu benchmarks/benchmark_cpu.cpp)
-target_link_libraries(benchmark_cpu PRIVATE cpu_filters_lib ${OpenCV_LIBS})
 
 
 
