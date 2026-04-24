@@ -11,7 +11,14 @@
 | Threading (1.3) | 352.24 | 8.1x | ✓ | 4-thread parallelism |
 | Cache-aware (1.4) | 2135.79 | 0.75x | ✗ | currently broken |
 
-### test2.png (3000x2000) naive = 2035.74 ms
+### test2.png (3000x2000)
+
+| Implementation | Time (ms) | Speedup vs Naive | Status | Notes |
+|---|---|---|---|---|
+| Naive (1.1) | 1378 | 1.0x | ✓ | Baseline |
+| SIMD AVX2 (1.2) | 297 | 4.6x | ✓ | Vectorization wins |
+| Threading (1.3) | 601 | 2.3x | ✓ | Threading overhead > benefit |
+| Cache-aware (1.4) | 1284 | 1.07x | ✗ | Tiling overhead still broken |
 
 ---
 
