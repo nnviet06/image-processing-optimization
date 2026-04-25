@@ -6,10 +6,10 @@
 
 | Implementation | Time (ms) | Speedup | Status | Notes |
 |---|---|---|---|---|
-| Naive (1.1) | 2856.76 | 1.0x | ✓ | Baseline scalar |
-| SIMD AVX2 (1.2) | 497.36 | 5.7x | ✓ | Vectorized |
-| Threading (1.3) | 352.24 | 8.1x | ✓ | 4-thread parallelism |
-| Cache-aware (1.4) | 2135.79 | 0.75x | ✗ | currently broken |
+| Naive (1.1) | 1360 | 1.0x | ✓ | Baseline scalar |
+| SIMD AVX2 (1.2) | 260 | 5.2x | ✓ | AVX2 vectorization, FMA |
+| Threading (1.3) | 220 | 6.2x | ✓ | 4-thread row-level parallelism |
+| Cache-aware (1.4) | 1140 | 1.2x | ✗ | Tiling overhead > benefit (separable convolution not cache-bound) |
 
 ### test2.png (3000x2000)
 
