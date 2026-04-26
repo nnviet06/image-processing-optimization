@@ -53,6 +53,11 @@ ScheduleProfile profile_and_schedule(const cv::Mat& src, int kernel_size, double
     }
     profile.gpu_time_ms = gpu_total / PROFILE_RUNS;
     std::cout << "  Average: " << profile.gpu_time_ms << " ms" << std::endl;
+
+    if (profile.cpu_time_ms < 0 || profile.gpu_time_ms < 0) {
+        std::cerr << "WARNING: Timing corrupted, defaulting to GPU" << std::endl;
+        profile.chosen_device = "GPU";
+    }
     
     // Decision logic: simple comparison
     std::cout << "\n=== DECISION ===" << std::endl;
