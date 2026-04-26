@@ -6,6 +6,17 @@ High-performance image processing library demonstrating CPU optimization (SIMD, 
 
 ---
 
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Requirements](#requirements)
+- [Build & Run](#build--run)
+- [Repository Structure](#repository-structure)
+- [Key Findings](#key-findings)
+- [Known Issues](#known-issues-and-limitations)
+- [Future Work](#future-work)
+
+---
+
 ## Project Overview
 
 Three-phase optimization of Gaussian blur demonstrating progression from scalar CPU code to vectorized/threaded optimization to GPU acceleration with intelligent scheduling:
@@ -86,32 +97,6 @@ The scheduler will:
 
 ---
 
-**Decision Logic:**
-```cpp
-if (gpu_time_ms < cpu_time_ms) {
-    return GPU;
-} else {
-    return CPU;
-}
-```
-
-Scheduler profiles both paths on real hardware, adapts to different systems automatically.
-
----
-
-## Known issues and limitations
-
-- [#4: Threading performance regression on smaller images](https://github.com/nnviet06/image-processing-optimization/issues/4)
-  - Impact: Threading slower than SIMD on 3K images
-  - Priority: Low (larger images favor threading)
-
-- [#5: Cache-aware tiling slower than naive](https://github.com/nnviet06/image-processing-optimization/issues/5)
-  - Impact: Phase 1.4 implementation broken
-  - Reason: Separable convolution not cache-bound; tiling overhead > benefit
-  - Priority: Low (threading already optimal)
-
----
-
 ## Repository Structure
 ```
 image-processing-optimization/
@@ -165,4 +150,40 @@ image-processing-optimization/
 
 ---
 
+## Known Issues and Limitations
 
+- [#4: Threading performance regression on smaller images](https://github.com/nnviet06/image-processing-optimization/issues/4)
+  - Impact: Threading slower than SIMD on 3K images
+  - Priority: Low (larger images favor threading)
+
+- [#5: Cache-aware tiling slower than naive](https://github.com/nnviet06/image-processing-optimization/issues/5)
+  - Impact: Phase 1.4 implementation broken
+  - Reason: Separable convolution not cache-bound; tiling overhead > benefit
+  - Priority: Low (threading already optimal)
+
+---
+## Future Work
+
+### Current Limitations
+
+The project demonstrates the core optimization hierarchy (scalar → SIMD → threaded → GPU), but v1 has intentional gaps that represent real systems engineering challenges:
+
+1. **Scheduler is simple:** Current Phase 3 is `if (gpu_time < cpu_time) return GPU`. This works because GPU dominates all tested workloads, but it's not a real scheduler, it's a measurement artifact.
+
+2. **No correctness validation:** Benchmark timings mean nothing if the output is wrong. There are no PSNR/MSE checks verifying SIMD and CUDA implementations match the naive baseline.
+
+3. **Limited scope:** Only one kernel (Gaussian blur), one problem size sweep (two test images), no contention or real batch scenarios.
+
+---
+
+### Next Steps
+
+**High priority**
+1. **Add correctness validation** — PSNR/MSE checks comparing SIMD/CUDA outputs to naive baseline. 
+2. **Find the crossover point** — Sweep image sizes from 32×32 to 8K and find where GPU becomes faster than CPU. 
+3. **Improve scheduler logic** — Account for GPU queue depth/contention instead of just raw speed comparison.
+4. **Profiler artifact** — Run `perf stat` on CPU threaded, save output. 
+
+**Medium priority**
+- Implement another filter to show which optimizations generalize beyond separable convolution
+- Extend scheduler to handle batch contention (queue depth parameter)
