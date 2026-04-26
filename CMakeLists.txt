@@ -60,3 +60,14 @@ set_target_properties(gaussian_gpu_optimized PROPERTIES CUDA_SEPARABLE_COMPILATI
 add_executable(gaussian_gpu_batch src/gpu/batch/gaussian_batch.cu)
 target_link_libraries(gaussian_gpu_batch PRIVATE gpu_filters_lib ${OpenCV_LIBS} CUDA::cudart)
 set_target_properties(gaussian_gpu_batch PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+# ============= PHASE 3: SMART SCHEDULER =============
+
+add_executable(gaussian_scheduler src/scheduler/scheduler.cpp)
+target_link_libraries(gaussian_scheduler PRIVATE 
+    cpu_filters_lib 
+    gpu_filters_lib 
+    ${OpenCV_LIBS} 
+    CUDA::cudart
+    Threads::Threads)
+set_target_properties(gaussian_scheduler PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
