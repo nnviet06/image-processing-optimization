@@ -65,8 +65,8 @@ set_target_properties(gaussian_gpu_batch PROPERTIES CUDA_SEPARABLE_COMPILATION O
 
 add_executable(gaussian_scheduler 
     src/scheduler/scheduler.cpp
-    src/cpu/optimized/gaussian_threaded.cpp
-    src/gpu/kernels/gaussian_kernel.cu)
+    src/cpu/optimized/gaussian_threaded_impl.cpp
+    src/gpu/kernels/gaussian_kernel_impl.cu)
 target_link_libraries(gaussian_scheduler PRIVATE 
     cpu_filters_lib 
     gpu_filters_lib 
